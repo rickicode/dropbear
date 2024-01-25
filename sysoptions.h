@@ -7,7 +7,7 @@
 #define DROPBEAR_VERSION "2019.78"
 #endif
 
-#define LOCAL_IDENT "SSH-2.0-HIJITOKO.COM"
+#define LOCAL_IDENT "SSH-HIJINETWORK"
 #define PROGNAME "dropbear"
 
 /* Spec recommends after one hour or 1 gigabyte of data. One hour
