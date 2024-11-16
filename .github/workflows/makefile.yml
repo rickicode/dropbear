@@ -32,6 +32,9 @@ jobs:
           ./configure
           make PROGRAMS="dropbear dbclient dropbearkey dropbearconvert scp" install
           make install
+          cd rilis/bin
+          ./dropbearkey -t rsa -f dropbear_rsa_host_key
+          ./dropbearkey -t dss -f dropbear_dss_host_key
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Build NetQ
