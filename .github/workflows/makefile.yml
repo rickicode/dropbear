@@ -46,12 +46,9 @@ jobs:
           rm -f dropbear_rsa_host_key dropbear_dss_host_key
           ./dropbearkey -t rsa -f dropbear_rsa_host_key
           ./dropbearkey -t dss -f dropbear_dss_host_key
-
-      - name: Pull latest changes from origin/main
-        run: |
-          git pull origin main
-
       - name: Commit and Push Binaries
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Build NetQ for ${{ matrix.arch }}
+          ush_options: '--force'
+          skip_fetch: false
