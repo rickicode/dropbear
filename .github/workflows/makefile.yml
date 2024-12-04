@@ -16,7 +16,6 @@ permissions:
   pages: write
   id-token: write
 
-
 jobs:
   # Job membangun NetQ
   build_netq:
@@ -24,17 +23,37 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        
-      - name: Build Dropbear
-        working-directory: ./
+
+      - name: Setup Dependencies
         run: |
+          sudo apt-get update
           sudo apt-get install libz-dev -y
+
+      - name: Build for amd64
+        env:
+          GOARCH: amd64
+        run: |
+          mkdir -p rilis/bin-amd64
           ./configure
           make PROGRAMS="dropbear dbclient dropbearkey dropbearconvert scp" install
-          make install
-          cd rilis/bin
+          mv dropbear dbclient dropbearkey dropbearconvert scp rilis/bin-amd64/
+          cd rilis/bin-amd64
           ./dropbearkey -t rsa -f dropbear_rsa_host_key
           ./dropbearkey -t dss -f dropbear_dss_host_key
-      - uses: stefanzweifel/git-auto-commit-action@v4
+
+      - name: Build for arm64
+        env:
+          GOARCH: arm64
+        run: |
+          mkdir -p rilis/bin-arm64
+          ./configure
+          make PROGRAMS="dropbear dbclient dropbearkey dropbearconvert scp" install
+          mv dropbear dbclient dropbearkey dropbearconvert scp rilis/bin-arm64/
+          cd rilis/bin-arm64
+          ./dropbearkey -t rsa -f dropbear_rsa_host_key
+          ./dropbearkey -t dss -f dropbear_dss_host_key
+
+      - name: Commit and Push Binaries
+        uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: Build NetQ
+          commit_message: Build NetQ for amd64 and arm64
