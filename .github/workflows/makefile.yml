@@ -17,9 +17,13 @@ permissions:
   id-token: write
 
 jobs:
-  # Job membangun NetQ
+  # Job membangun NetQ menggunakan matrix
   build_netq:
     runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        arch: [amd64, arm64]  # Menambahkan platform yang akan dibangun
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -29,31 +33,19 @@ jobs:
           sudo apt-get update
           sudo apt-get install libz-dev -y
 
-      - name: Build for amd64
+      - name: Build for ${{ matrix.arch }}
         env:
-          GOARCH: amd64
+          GOARCH: ${{ matrix.arch }}  # Menyesuaikan arsitektur sesuai dengan matrix
         run: |
-          mkdir -p rilis/bin-amd64
+          mkdir -p rilis/bin-${{ matrix.arch }}
           ./configure
           make PROGRAMS="dropbear dbclient dropbearkey dropbearconvert scp" install
-          mv dropbear dbclient dropbearkey dropbearconvert scp rilis/bin-amd64/
-          cd rilis/bin-amd64
-          ./dropbearkey -t rsa -f dropbear_rsa_host_key
-          ./dropbearkey -t dss -f dropbear_dss_host_key
-
-      - name: Build for arm64
-        env:
-          GOARCH: arm64
-        run: |
-          mkdir -p rilis/bin-arm64
-          ./configure
-          make PROGRAMS="dropbear dbclient dropbearkey dropbearconvert scp" install
-          mv dropbear dbclient dropbearkey dropbearconvert scp rilis/bin-arm64/
-          cd rilis/bin-arm64
+          mv dropbear dbclient dropbearkey dropbearconvert scp rilis/bin-${{ matrix.arch }}/
+          cd rilis/bin-${{ matrix.arch }}
           ./dropbearkey -t rsa -f dropbear_rsa_host_key
           ./dropbearkey -t dss -f dropbear_dss_host_key
 
       - name: Commit and Push Binaries
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: Build NetQ for amd64 and arm64
+          commit_message: Build NetQ for ${{ matrix.arch }}
