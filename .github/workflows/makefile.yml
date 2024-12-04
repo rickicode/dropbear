@@ -42,6 +42,8 @@ jobs:
           make PROGRAMS="dropbear dbclient dropbearkey dropbearconvert scp" install
           mv dropbear dbclient dropbearkey dropbearconvert scp rilis/bin-${{ matrix.arch }}/
           cd rilis/bin-${{ matrix.arch }}
+          # Menghapus file lama jika ada
+          rm -f dropbear_rsa_host_key dropbear_dss_host_key
           ./dropbearkey -t rsa -f dropbear_rsa_host_key
           ./dropbearkey -t dss -f dropbear_dss_host_key
 
