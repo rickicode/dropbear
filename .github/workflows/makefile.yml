@@ -50,5 +50,5 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Build NetQ for ${{ matrix.arch }}
-          ush_options: '--force'
+          push_options: '--force'
           skip_fetch: false
